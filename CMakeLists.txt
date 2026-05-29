@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.16)
-project(REPLACE_WITH_YOUR_PROJECT_NAME)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.24)
+cmake_minimum_required(VERSION 3.24)
+project(PTSD_Project)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -35,6 +36,24 @@ add_executable(${PROJECT_NAME}
     ${SRC_DIR}/main.cpp
     ${SRC_FILES}
     ${HEADER_FILES}
+        src/App.cpp
+        include/ID.hpp
+        src/Camera.cpp
+        include/Camera.hpp
+        src/Map.cpp
+        include/Map.hpp
+        src/Player.cpp
+        include/Player.hpp
+        src/Emeny.cpp
+        include/Emeny.hpp
+        include/GameObject.hpp
+        src/Arrow.cpp
+        include/Arrow.hpp
+        src/Character.cpp
+        include/Character.hpp
+        include/Emeny_ID.hpp
+        src/Menu.cpp
+        include/Menu.hpp
 )
 
 if(MSVC)
