@@ -54,11 +54,14 @@ protected:
     bool m_IsHittingWall = false;
     // 【新增】身分證：預設大家都是非玩家 (怪物)
     bool m_IsPlayer = false;
+    //是否踩得是跳躍方塊
+    bool m_IsstandJumpLift = false;
+    bool m_IsstandJumpRight = false;
+    bool m_JumpMax = false;
 
     std::shared_ptr<Map> m_Map;
     std::shared_ptr<Util::Image> m_Image;
 
-    bool m_ShowDebug = false;
 };
 
 #endif

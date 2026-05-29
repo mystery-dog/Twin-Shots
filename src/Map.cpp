@@ -30,6 +30,10 @@ void Map::InitTileImages() {
     // 背景圖片 (對應 ID 1)
     m_TileImages[1] = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/141.jpg"); // 改用 ID 當 Key 比較快
     for (int i = 0; i < 4; i++) {
+        if (i<2) {
+            auto path = std::string(RESOURCE_DIR) + "/Image/background/pause" + std::to_string(i) + ".png";
+            m_TileImages[i + 6] = std::make_shared<Util::Image>(path);
+        }
         auto path = std::string(RESOURCE_DIR) + "/Image/background/life_" + std::to_string(i) + ".png";
         m_TileImages[i + 2] = std::make_shared<Util::Image>(path);
     }
@@ -44,6 +48,11 @@ void Map::InitTileImages() {
     for (int i = 0; i < 7; i++) {
         auto path = std::string(RESOURCE_DIR) + "/Image/background/grass" + std::to_string(i) + ".png";
         m_TileImages[i + 30] = std::make_shared<Util::Image>(path); // 改用 ID 當 Key 比較快
+    }
+    // 花圖片 (對應 ID 40 ~ 48)
+    for (int i = 0; i < 9; i++) {
+        auto path = std::string(RESOURCE_DIR) + "/Image/background/flower" + std::to_string(i) + ".png";
+        m_TileImages[i + 40] = std::make_shared<Util::Image>(path); // 改用 ID 當 Key 比較快
     }
     // 牆壁或隱形牆 (對應 ID 910+ 與 90)
     for (int i = 0; i < 5; i++) {
@@ -146,7 +155,8 @@ bool Map::IsSolid(int id, bool isPlayer) {
     if (id >= TileID::LIFE_0 && id <= TileID::LIFE_3) return false; // 愛心 UI 不能踩
     if (id >= TileID::WALLGPILLAR0_0 && id <= TileID::WALLGPILLAR1_3) return false;
     if (id >= TileID::WALLGROUND_0 && id <= TileID::WALLGROUND_7) return false;
-    if (id >= TileID::GRASS_0 && id <= TileID::GRASS_6) return false;
+    if (id >= TileID::GRASS_0 && id <= TileID::FLOWER_8) return false;//草+花
+    if (id <= TileID::LAFTJUMP) return false;
     if (id == TileID::AIRWALL) {
         // 如果是空氣牆 (90)：玩家可以穿過 (回傳 false)，怪物會被擋住 (回傳 true)
         return !isPlayer;
@@ -216,6 +226,10 @@ void Map::Draw(float cameraX, float cameraY) {
         else if (m_Player->GetLife() == 2) m_TileImages[TileID::LIFE_2]->Draw(Life);
         else if (m_Player->GetLife() == 1) m_TileImages[TileID::LIFE_1]->Draw(Life);
         else m_TileImages[TileID::LIFE_0]->Draw(Life);
+
+        //暫停顯示
+        m_Pause.translation = {600.0f, 335.0f};
+        m_Pause.scale = {6.0f, 6.0f};
     }
 
 
@@ -261,34 +275,43 @@ void Map::Draw(float cameraX, float cameraY) {
                 // 3. 把算好 scale 的 transform 傳進去轉換
                 Core::Matrices matricesData = Util::ConvertToUniformBufferData(transform, size, 0.0f);
                 m_TileImages[id]->Draw(matricesData);
-
-
-                // ==========================================
-                // 【新增】除錯渲染：畫出方塊的物理碰撞邊界
-                // ==========================================
-                // 只有在開啟除錯模式，而且這個方塊是「實體(IsSolid)」時才畫
-                if (m_ShowDebug && IsSolid(id, false)) {
-                    static auto debugPoint = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/life_0.png");
-                    Util::Transform debugTransform;
-                    debugTransform.rotation = 0.0f;
-                    // 點縮小一點，免得太亂
-                    debugTransform.scale = {0.2f, 0.2f};
-
-                    // 算出這個方塊的「頂部表面 Y」以及「左右邊緣 X」
-                    // 根據之前的換算公式，screenX/Y 是方塊的正中心
-                    float topY = screenY + m_TileSize / 2.0f;
-                    float leftX = screenX - m_TileSize / 2.0f;
-                    float rightX = screenX + m_TileSize / 2.0f;
-
-                    // 畫在左上角 (Z-Index 設為 1.5f，確保畫在方塊上面，但在角色探針下面)
-                    debugTransform.translation = {leftX, topY};
-                    debugPoint->Draw(Util::ConvertToUniformBufferData(debugTransform, debugPoint->GetSize(), 1.5f));
-
-                    // 畫在右上角
-                    debugTransform.translation = {rightX, topY};
-                    debugPoint->Draw(Util::ConvertToUniformBufferData(debugTransform, debugPoint->GetSize(), 1.5f));
-                }
             }
         }
     }
+}
+
+bool Map::GetPauseState() {
+    if (Util::Input::IsKeyDown(Util::Keycode::P)) {
+        m_PausePressed = true;
+    }
+    // 1. 取得滑鼠位置
+    glm::vec2 mousePos = Util::Input::GetCursorPosition();
+
+    // 2. 取得按鈕尺寸
+    glm::vec2 btnSize = m_TileImages[TileID::PAUSE_0]->GetSize();
+    float halfW = btnSize.x / 2.0f;
+    float halfH = btnSize.y / 2.0f;
+
+    // 3. 判定滑鼠是否在按鈕矩形範圍內
+    if (mousePos.x > m_Pause.translation.x - halfW &&
+        mousePos.x < m_Pause.translation.x + halfW &&
+        mousePos.y > m_Pause.translation.y - halfH &&
+        mousePos.y < m_Pause.translation.y + halfH) {
+
+        m_IsPauseHovering = true;
+
+        // 4. 如果懸停且按下左鍵
+        if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {
+            m_PausePressed = true;
+        }
+
+        } else{
+            m_IsPauseHovering = false;
+        }
+
+    auto Pause = Util::ConvertToUniformBufferData(m_Pause, m_Pause.scale, 1.0f);
+    if (m_IsPauseHovering) m_TileImages[TileID::PAUSE_1]->Draw(Pause);
+    else m_TileImages[TileID::PAUSE_0]->Draw(Pause);
+
+    return m_PausePressed;
 }

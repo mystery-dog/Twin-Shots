@@ -76,11 +76,27 @@ void Character::Update() {
 
         int leftTile = m_Map->GetTileID(leftFootX, feetY);
         int rightTile = m_Map->GetTileID(rightFootX, feetY);
+        if (m_Map->GetTileID(leftFootX - 5.0f, feetY + 55.0f) == TileID::LAFTJUMP) {
+            m_IsstandJumpLift = true;
+        }else if (m_Map->GetTileID(leftFootX, feetY + 55.0f) == TileID::RIGHTJUMP) {
+            m_IsstandJumpRight = true;
+        }else if (m_Map->GetTileID(leftFootX - 5.0f, feetY + 55.0f) == TileID::MAXLAFTJUMP) {
+            m_IsstandJumpLift = true;
+            m_JumpMax = true;
+        }else if (m_Map->GetTileID(leftFootX, feetY + 55.0f) == TileID::MAXRIGHTJUMP) {
+            m_IsstandJumpRight = true;
+            m_JumpMax = true;
+        }else {
+            m_IsstandJumpLift = false;
+            m_IsstandJumpRight = false;
+            m_JumpMax = false;
+        }
+
 
         if (m_Map->IsSolid(leftTile, m_IsPlayer) || m_Map->IsSolid(rightTile, m_IsPlayer)) {
-            int gridY = std::floor((-(feetY) + m_Map->GetTileSize() / 2.0f) / m_Map->GetTileSize());
-            float tileTopY = -(gridY * m_Map->GetTileSize()) + m_Map->GetTileSize() / 2.0f;
-            nextY = tileTopY;
+            int gridY = std::floor((-(feetY - 400.0f) + m_Map->GetTileSize() / 2.0f) / m_Map->GetTileSize());
+            float tileTopY = -(gridY * m_Map->GetTileSize()) + 400.0f + m_Map->GetTileSize() / 2.0f;
+            nextY = tileTopY + halfHeight;
             m_VelocityY = 0.0f;
             m_IsGrounded = true;
         }
@@ -112,45 +128,4 @@ void Character::Draw(float cameraX, float cameraY) {
     Core::Matrices matricesData = Util::ConvertToUniformBufferData(transform, size, 1.0f);
     m_Image->Draw(matricesData);
 
-    // ==========================================
-    // 2. 共用的除錯渲染：畫出所有物理探針！
-    // ==========================================
-    if (m_ShowDebug) {
-        static auto debugPoint = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/life_0.png");
-
-        float halfWidth = m_Image->GetSize().x;
-        float halfHeight = m_Image->GetSize().y;
-
-        // ------------------------------------------
-        // (1) 垂直碰撞探針 (腳底)
-        // ------------------------------------------
-        float leftFootX = m_X - halfWidth * 0.5f;
-        float rightFootX = m_X + halfWidth * 0.5f;
-        float feetY = m_Y - halfHeight;
-
-        Util::Transform probeTransform;
-        probeTransform.rotation = 0.0f;
-        probeTransform.scale = {0.3f, 0.3f};
-
-        probeTransform.translation = {leftFootX - cameraX, feetY - cameraY};
-        debugPoint->Draw(Util::ConvertToUniformBufferData(probeTransform, debugPoint->GetSize(), 2.0f));
-
-        probeTransform.translation = {rightFootX - cameraX, feetY - cameraY};
-        debugPoint->Draw(Util::ConvertToUniformBufferData(probeTransform, debugPoint->GetSize(), 2.0f));
-
-        // ------------------------------------------
-        // (2) 水平碰撞探針 (腰部)
-        // ------------------------------------------
-        float trueHalfWidth = halfWidth * 0.5f;
-        float bodyY = m_Y + 10.0f;
-
-        float leftSideX = m_X - trueHalfWidth;
-        float rightSideX = m_X + trueHalfWidth;
-
-        probeTransform.translation = {leftSideX - cameraX, bodyY - cameraY};
-        debugPoint->Draw(Util::ConvertToUniformBufferData(probeTransform, debugPoint->GetSize(), 2.0f));
-
-        probeTransform.translation = {rightSideX - cameraX, bodyY - cameraY};
-        debugPoint->Draw(Util::ConvertToUniformBufferData(probeTransform, debugPoint->GetSize(), 2.0f));
-    }
 }

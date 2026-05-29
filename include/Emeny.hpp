@@ -17,12 +17,25 @@ public:
     // 實作怪物專屬的 AI 大腦
     void Update() override;
 
+    void DarkDevilMove();
+
+    // ==========================================
+    // 【新增】判斷生死狀態的公開函式
+    // ==========================================
+    bool IsDead() const { return m_IsDead; }
+
 private:
     // 【新增】用來儲存這隻怪物是什麼種類
     ENEMY_ID::Type m_Type;
 
     // 怪物的行為狀態：預設往左走
     bool m_MovingLeft = true;
+    // 【新增】跳躍冷卻計時器
+    int m_JumpCooldown = 0;
+    int m_MaxJumpTimer = 0;
+    bool m_IsJump = false;
+    // 【新增】怪物是否死亡的旗標，預設為活著 (false)
+    bool m_IsDead = false;
 
     // ==========================================
     // 【新增】動畫資源與計時器

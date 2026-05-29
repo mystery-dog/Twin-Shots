@@ -27,6 +27,10 @@ public:
     void SetLife() { m_life = 3; }
 
     void SetBorder(float Height, float Width);
+
+    // 【新增】宣告玩家要覆寫自己的 Draw 邏輯！
+    void Draw(float cameraX, float cameraY) override;
+
 private:
     int m_life = 3;
 

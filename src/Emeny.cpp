@@ -55,16 +55,8 @@ Emeny::Emeny(ENEMY_ID::Type type, float startX, float startY, std::shared_ptr<Ma
     }
 
     // 怪物通常走得比較慢
-    if (type == ENEMY_ID::Slime) {
-        m_Speed = 3.0f;
-        m_Type = ENEMY_ID::Slime;
-    }else if (type == ENEMY_ID::Flymonster) {
-        m_Speed = 1.0f;
-        m_Type = ENEMY_ID::Flymonster;
-    }else if (type == ENEMY_ID::DarkDevil) {
-        m_Speed = 1.0f;
-        m_Type = ENEMY_ID::DarkDevil;
-    }
+    m_Speed = 3.0f;
+    m_Type = type;
 }
 
 void Emeny::Update() {
@@ -78,6 +70,10 @@ void Emeny::Update() {
     // 2. 身體執行：老爸，幫我算物理！
     // ==========================================
     Character::Update();
+
+    if (m_Type == ENEMY_ID::DarkDevil) {
+        DarkDevilMove();
+    }
 
     // ==========================================
     // 3. AI 反應：判斷是否撞牆
@@ -112,8 +108,13 @@ void Emeny::Update() {
             int currentIndex = m_FrameIndex % m_FlymonsterLift.size();
             m_Image = m_FlymonsterLift[currentIndex];
         }else {
-            int currentIndex = m_FrameIndex % m_DarkDevilLift.size();
-            m_Image = m_DarkDevilLift[currentIndex];
+            if (!m_IsGrounded) {
+                int currentIndex = m_FrameIndex % m_DarkDevilLiftJump.size();
+                m_Image = m_DarkDevilLiftJump[currentIndex];
+            }else {
+                int currentIndex = m_FrameIndex % m_DarkDevilLift.size();
+                m_Image = m_DarkDevilLift[currentIndex];
+            }
         }
 
     }
@@ -125,14 +126,68 @@ void Emeny::Update() {
             int currentIndex = m_FrameIndex % m_FlymonsterRight.size();
             m_Image = m_FlymonsterRight[currentIndex];
         }else {
-            int currentIndex = m_FrameIndex % m_DarkDevilLift.size();
-            m_Image = m_DarkDevilRight[currentIndex];
+            if (!m_IsGrounded) {
+                int currentIndex = m_FrameIndex % m_DarkDevilRightJump.size();
+                m_Image = m_DarkDevilRightJump[currentIndex];
+            }else {
+                int currentIndex = m_FrameIndex % m_DarkDevilRight.size();
+                m_Image = m_DarkDevilRight[currentIndex];
+            }
         }
     }
 
-    if ((m_FrameIndex % 10 > 8 || m_FrameIndex % 10 < 3) && GetType() == ENEMY_ID::Slime) {
-        m_Speed = 0.0f;
-    } else {
+    if (GetType() == ENEMY_ID::Slime) {
+        if (m_FrameIndex % 10 > 8 || m_FrameIndex % 10 < 3) {
+            m_Speed = 0.0f;
+        } else {
+            m_Speed = 3.0f;
+        }
+    }
+}
+
+void Emeny::DarkDevilMove() {
+    // 1. 冷卻計時器推進
+    m_JumpCooldown++;
+    if (m_IsGrounded) {
+        m_IsPlayer = false;
         m_Speed = 3.0f;
+    }
+    if (m_IsGrounded  && m_JumpCooldown > m_MaxJumpTimer) {
+        if (IsFacingRight() && m_IsstandJumpRight) {
+            m_IsJump = true;
+        }else if (!IsFacingRight() && m_IsstandJumpLift) {
+            m_IsJump = true;
+        }else {
+            m_IsJump = false;
+        }
+    }
+    int FaceMode = rand() % 100;
+    if (FaceMode == 2 && m_IsGrounded) m_MovingLeft = !m_MovingLeft;
+    // 2. 判斷是否踩在地上 (m_IsGrounded) 且冷卻時間完畢 (例如 120 幀 = 2秒)
+    if (m_IsJump) {
+        // 賦予向上的垂直速度！(老爸的 m_JumpForce 預設是 15.0f)
+        m_VelocityY = 13.5f;
+
+        // 【核心魔法：決定兩種跳躍模式】
+        // 產生 0 或 1，機率各一半 (50%)
+        int jumpMode = rand() % 4;
+
+        if (jumpMode == 0 && !m_JumpMax) {
+            m_Speed = 2.0f;
+        }else if (jumpMode == 1) {
+            m_MaxJumpTimer = 300.0f;
+            m_Speed = 5.2f;
+        }else {
+            m_Speed = 5.2f;
+            m_MaxJumpTimer = 120.0f;
+        }
+
+        // 標記為離地，這樣物理引擎就會開始對牠套用重力往下掉
+        m_IsGrounded = false;
+        m_IsJump = false;
+        m_IsPlayer = true;
+
+        // 重置冷卻時間
+        m_JumpCooldown = 0;
     }
 }

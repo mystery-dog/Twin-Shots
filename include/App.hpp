@@ -40,6 +40,7 @@ public:
 
     void End(); // NOLINT(readability-convert-member-functions-to-static)
 
+
 private:
     State m_CurrentState = State::START;
 
@@ -56,8 +57,11 @@ private:
     Camera m_Camera;
 
     std::shared_ptr<Menu> m_Menu;
+    std::shared_ptr<Map> m_Map;
 
     int m_CurrentLevel = 1;
+
+    bool Stop = false;
 };
 
 #endif

@@ -70,13 +70,37 @@ void Player::Update() {
     if (Util::Input::IsKeyDown(Util::Keycode::O)) {
         m_life--;
     }
+}
 
+void Player::Draw(float cameraX, float cameraY) {
+    // 1. 呼叫老爸 (Character) 的 Draw，讓他幫我們畫出「本體」和「除錯紅點探針」！
+    Character::Draw(cameraX, cameraY);
 
+    // 2. 玩家專屬的「無縫穿牆視覺分身」邏輯
+    if (!m_Image) return;
 
-    // 【新增】除錯開關切換
-    // 注意：這裡必須用 IsKeyDown (按下的瞬間觸發一次)，
-    // 不能用 IsKeyPressed (按住會一直觸發，導致開關瘋狂閃爍)
-    if (Util::Input::IsKeyDown(Util::Keycode::P)) {
-        m_ShowDebug = !m_ShowDebug; // 把開關的狀態反轉 (true 變 false, false 變 true)
+    Util::Transform transform;
+    transform.rotation = 0.0f;
+    transform.scale = {2.0f, 2.0f};
+    glm::vec2 size = m_Image->GetSize();
+
+    float screenX = m_X - cameraX;
+    float screenY = m_Y - cameraY;
+
+    // 計算地圖的總寬度 (右邊界 - 左邊界)
+    // 這裡我們用你之前設定的 m_BorderWidth 和 m_MapWidth
+    float leftEdge = m_BorderWidth;
+    float rightEdge = m_MapWidth;
+    float wrapDistance = rightEdge - leftEdge;
+
+    // 如果角色的座標靠近左邊界
+    if (m_X < leftEdge + size.x) {
+        transform.translation = {screenX + wrapDistance, screenY};
+        m_Image->Draw(Util::ConvertToUniformBufferData(transform, size, 1.0f));
+    }
+    // 如果角色的座標靠近右邊界
+    else if (m_X > rightEdge - size.x) {
+        transform.translation = {screenX - wrapDistance, screenY};
+        m_Image->Draw(Util::ConvertToUniformBufferData(transform, size, 1.0f));
     }
 }

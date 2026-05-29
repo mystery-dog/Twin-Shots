@@ -4,6 +4,11 @@
 namespace TileID {
     // 使用 enum class 可以避免名稱衝突，且強制類型安全
     enum Type {
+        LAFTJUMP = -1,
+        RIGHTJUMP = -2,
+        MAXLAFTJUMP = -3,
+        MAXRIGHTJUMP = -4,
+
         EMPTY = 0,//空
 
         //背景 開頭0
@@ -12,6 +17,8 @@ namespace TileID {
         LIFE_1  =   3,      //對應life_1
         LIFE_2  =   4,      //對應life_2
         LIFE_3  =   5,      //對應life_3
+        PAUSE_0 =   6,
+        PAUSE_1 =   7,
 
         //地板 開頭1
         GROUND_0 = 10,      // 對應 tile0
@@ -64,6 +71,16 @@ namespace TileID {
         GRASS_4 = 34, // 對應 grass4
         GRASS_5 = 35, // 對應 grass5
         GRASS_6 = 36, // 對應 grass6
+        //花 開頭4
+        FLOWER_0 = 40,
+        FLOWER_1 = 41,
+        FLOWER_2 = 42,
+        FLOWER_3 = 43,
+        FLOWER_4 = 44,
+        FLOWER_5 = 45,
+        FLOWER_6 = 46,
+        FLOWER_7 = 47,
+        FLOWER_8 = 48,
 
         //同時是牆也是地板 開頭7~8
         BOTHGROUND_0 = 70,      // 對應 tile0

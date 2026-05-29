@@ -38,6 +38,10 @@ public:
 
     void SetPlayer(std::shared_ptr<Player> player) { m_Player = player; }
 
+    bool GetPauseState()
+    ;// 【新增】提供一個方法讓外部強制洗掉暫停狀態
+    void SetPausePressed() { m_PausePressed = false; }
+
 private:
     void InitTileImages();
 
@@ -48,6 +52,10 @@ private:
 
     // 【新增】地圖的除錯模式開關，預設為 false
     bool m_ShowDebug = false;
+
+    Util::Transform m_Pause;
+    bool m_PausePressed = false;
+    bool m_IsPauseHovering = false;
 };
 
 #endif
