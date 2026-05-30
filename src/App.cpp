@@ -21,8 +21,18 @@ void App::Start() {
     m_Menu->SetTotalScore();
     Stop = false;
 
-    if (m_Menu->IsPressed()) {
-        m_CurrentLevel = 1;
+    if (m_Menu->GetClickWhichButton() != -1){
+        if (m_Menu->GetClickWhichButton() == 2) {
+            Start();
+        }else {
+            if (m_Menu->GetClickWhichButton() == 11) {
+                m_CurrentLevel = 1;
+            }else if (m_Menu->GetClickWhichButton() == 12) {
+                m_CurrentLevel = 2;
+            }else if (m_Menu->GetClickWhichButton() == 13) {
+                m_CurrentLevel = 3;
+            }
+        }
 
         if (!m_Map) {
             m_Map = std::make_shared<Map>();
@@ -96,18 +106,19 @@ void App::Update() {
         }
     }
     // 3. 如果場上活著的怪物數量歸零，自動進入下一關！
-    if (aliveEnemyCount == 0) {
+    if (aliveEnemyCount == 0 ) {
         Stop = true;
-        m_Menu->LevelComplete();
+        if (m_CurrentLevel < 3) {
+            m_Menu->LevelComplete();
+        }else {
+            if (!m_GameObjects.empty()) m_GameObjects.clear();
+            m_Menu->Draw(0.0f,0.0f);
+            m_Menu->Win();
+        }
     }
 
     if (m_Menu->GetClickWhichButton() == 0) {
         m_CurrentLevel++;
-
-        // 假設你只有 3 關，全破後就回到第 1 關 (或是你想切換到 Win 結算畫面也可以寫在這裡)
-        if (m_CurrentLevel > 3) {
-            m_CurrentLevel = 1;
-        }
 
         Level(); // 載入新關卡
         m_Player->SetLife(); // 幫玩家補滿血

@@ -9,58 +9,49 @@
 
 Menu::Menu() {
     // 載入你的選單圖片
-    m_BackgroundImage = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/141.jpg");
-    m_LogoImage = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/menu.png");
-    m_PlayImage = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/play0.png");
+    BasicSet(m_BackgroundImage,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/141.jpg"),
+        m_BGTransform,0.0f, 0.0f,2.35f, 1.8f);
+    BasicSet(m_LogoImage,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/menu.png"),
+        m_LGTransform,0.0f, 150.0f,1.5f,1.5f);
+    BasicSet(m_PlayImage,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/play0.png"),
+        m_PlayTransform,0.0f, -50.0f,1.0f,1.0f);
+    //遮罩
+    BasicSet(m_Block,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/block.png"),
+        BlockTransform,0.0f, 0.0f,1.0f, 1.0f);
+    BasicSet(m_PurpleBlock,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/instruct_bk.png"),
+        PurpleBlockTransform,0.0f,0.0f,2.0f,2.0f);
+    //按鈕
+    BasicSet(m_Continue,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/continue0.png"),
+        ContinueTransform,0.0f, -50.0f,1.5f, 2.0f);
+    BasicSet(m_Endgame,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/endgame0.png"),
+        EndgameTransform,0.0f, -125.0f,1.5f, 2.0f);
+    BasicSet(m_Resue,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/restart0.png"),
+        ResueTransform,0.0f, 0.0f,1.5f, 2.0f);
+    BasicSet(m_RestartLevel,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/restart_level0.png"),
+        RestartLevelTransform,0.0f, -50.0f,1.5f, 2.0f);
+    BasicSet(m_Back,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/back_1.png"),
+        BackTransform,0.0f,-200.0f,2.0f,2.0f);
+    BasicSet(m_One,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/level1.png"),
+        OneTransform,-200.0f,0.0f,2.0f,2.0f);
+    BasicSet(m_Two,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/level2.png"),
+        TwoTransform,0.0f,0.0f,2.0f,2.0f);
+    BasicSet(m_Three,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/level3.png"),
+        ThreeTransform,200.0f,0.0f,2.0f,2.0f);
+    //字
+    BasicSet(m_LevelFinished,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/level_finished.png"),
+        LevelfinishedTransform,0.0f, 150.0f,2.0f, 1.5f);
+    BasicSet(m_Pause,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/pause_label.png"),
+        PauseTransform,0.0f,125.0f,1.2f,1.2f);
+    BasicSet(m_LevelFailed,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/level_failed.png"),
+      LevelFailedTransform,0.0f,150.0f,2.0f, 1.5f);
+    BasicSet(m_SelectLevel,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/select_level.png"),
+        SelectLevelTransform,0.0f,200.0f,2.5f,2.5f);
 
-    m_Block = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/block.png");
+    BasicSet(m_ShotCat,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/shotcat.png"),
+        ShotcatTransform,-150.0f, 50.0f,2.0f, 2.0f);
+    BasicSet(m_TrophyCat,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/game_finished.png"),
+        TrophycatTransform,0.0f,50.0f,2.0f,2.0f);
 
-    m_Continue = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/continue0.png");
-    m_Endgame = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/endgame0.png");
-    m_Resue = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/restart0.png");
-    m_RestartLevel = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/restart_level0.png");
-
-    m_LevelFinished = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/level_finished.png");
-    m_Pause = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/pause_label.png");
-    m_LevelFailed = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/level_failed.png");
-
-    m_ShotCat = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/shotcat.png");
-
-    m_BGTransform.scale = {2.35f, 1.8f};
-    m_BGTransform.translation = {0.0f, 0.0f};
-
-    m_LGTransform.translation = {0.0f, 150.0f};
-    m_LGTransform.scale = {1.5f,1.5f};
-
-    m_PlayTransform.scale = {1.0f,1.0f};
-    m_PlayTransform.translation = {0.0f, -50.0f};
-
-    // 1. 宣告 Transform
-    BlockTransform.translation = {0.0f, 0.0f}; // 貼死在螢幕正中心
-    BlockTransform.scale = {1.0f, 1.0f};       // 圖片原始比例
-
-    ContinueTransform.translation = {0.0f, -50.0f}; //
-    ContinueTransform.scale = {1.5f, 2.0f};       // 圖片原始比例
-
-    ResueTransform.translation = {0.0f, 0.0f};
-    ResueTransform.scale = {1.5f, 2.0f};
-
-    RestartLevelTransform = ContinueTransform;
-
-    EndgameTransform.translation = {0.0f, -125.0f}; //
-    EndgameTransform.scale = {1.5f, 2.0f};       // 圖片原始比例
-
-    LevelfinishedTransform.translation = {0.0f, 150.0f}; //
-    LevelfinishedTransform.scale = {2.0f, 1.5f};       // 圖片原始比例
-
-    PauseTransform.translation = {0.0f,125.0f};
-    PauseTransform.scale = {1.2f,1.2f};
-
-    LevelFailedTransform.translation = {0.0f,150.0f};
-    LevelFailedTransform.scale = {2.0f, 1.5f};
-
-    ShotcatTransform.translation = {-150.0f, 50.0f}; //
-    ShotcatTransform.scale = {2.0f, 2.0f};       // 圖片原始比例
 
     std::string fontPath = RESOURCE_DIR"/fonts/Cubic_11.ttf";
     auto purpleColor = Util::   Color::FromName(Util::Colors::PURPLE);
@@ -69,9 +60,29 @@ Menu::Menu() {
     m_TotalScoreText = std::make_shared<Util::Text>(fontPath, 40, "Total score: " + std::to_string(m_TotalScore), purpleColor);
 }
 
+void Menu::BasicSet(std::shared_ptr<Util::Image>& m_Image, std::shared_ptr<Util::Image> Image, Util::Transform& transform, float tx, float ty, float sx, float sy) {
+    m_Image = Image;
+    transform.translation = {tx,ty};
+    transform.scale = {sx,sy};
+}
+
+
 void Menu::Update() {
-    Click(m_PlayImage,m_PlayTransform);
-    Draw(0.0f,0.0f);
+    // 1. 不管在哪個畫面，背景圖永遠都要畫在最底層！
+    m_BackgroundImage->Draw(Util::ConvertToUniformBufferData(m_BGTransform, m_BackgroundImage->GetSize(), m_ZIndex_BG));
+
+    // 2. 狀態分流：根據是否按下 Play 鍵，決定要畫什麼 UI
+    if (!m_StartPressed) {
+        // 【狀態 A：還沒按 Play (主畫面)】
+        // 畫出 Logo
+        m_LogoImage->Draw(Util::ConvertToUniformBufferData(m_LGTransform, m_LogoImage->GetSize(), m_ZIndex_LG));
+        // 處理並畫出 Play 按鈕
+        Click(m_PlayImage, m_PlayTransform);
+    } else {
+        // 【狀態 B：已經按下 Play (選關卡畫面)】
+        // 直接在這裡呼叫選關卡函式，不再畫 Logo 跟 Play！
+        LevelSelect();
+    }
 }
 
 void Menu::Click(std::shared_ptr<Util::Image> Image, Util::Transform transform) {
@@ -97,12 +108,18 @@ void Menu::Click(std::shared_ptr<Util::Image> Image, Util::Transform transform) 
                 m_StartPressed = true;
             }else if (Image == m_Continue) {
                 m_ClickWhichButton = 0;
-            }else if (Image == m_Endgame) {
+            }else if (Image == m_Endgame || Image == m_Back) {
                 m_ClickWhichButton = 1;
             }else if (Image == m_Resue) {
                 m_ClickWhichButton = 2;
             }else if (Image == m_RestartLevel) {
                 m_ClickWhichButton = 3;
+            }else if (Image == m_One) {
+                m_ClickWhichButton = 11;
+            }else if (Image == m_Two) {
+                m_ClickWhichButton = 12;
+            }else if (Image == m_Three) {
+                m_ClickWhichButton = 13;
             }
         }
 
@@ -129,6 +146,22 @@ void Menu::Click(std::shared_ptr<Util::Image> Image, Util::Transform transform) 
         auto currentPlayImg = m_IsHovering ? std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/restart_level1.png") : std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/restart_level0.png");
         auto matrices = Util::ConvertToUniformBufferData(RestartLevelTransform, currentPlayImg->GetSize(), 5.5f);
         currentPlayImg->Draw(matrices);
+    }else if (Image == m_Back) {
+        auto currentPlayImg = m_IsHovering ? std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/back_2.png") : std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/back_1.png");
+        auto matrices = Util::ConvertToUniformBufferData(BackTransform, currentPlayImg->GetSize(), 1.6f);
+        currentPlayImg->Draw(matrices);
+    }else if (Image == m_One) {
+        auto currentPlayImg = m_IsHovering ? std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/level1_1.png") : std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/level1.png");
+        auto matrices = Util::ConvertToUniformBufferData(OneTransform, currentPlayImg->GetSize(), 1.6f);
+        currentPlayImg->Draw(matrices);
+    }else if (Image == m_Two) {
+        auto currentPlayImg = m_IsHovering ? std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/level2_2.png") : std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/level2.png");
+        auto matrices = Util::ConvertToUniformBufferData(TwoTransform, currentPlayImg->GetSize(), 1.6f);
+        currentPlayImg->Draw(matrices);
+    }else if (Image == m_Three) {
+        auto currentPlayImg = m_IsHovering ? std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/level3_3.png") : std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/level3.png");
+        auto matrices = Util::ConvertToUniformBufferData(ThreeTransform, currentPlayImg->GetSize(), 1.6f);
+        currentPlayImg->Draw(matrices);
     }
 }
 
@@ -136,8 +169,20 @@ void Menu::Click(std::shared_ptr<Util::Image> Image, Util::Transform transform) 
 
 void Menu::Draw(float cameraX, float cameraY) {
     m_BackgroundImage->Draw(Util::ConvertToUniformBufferData(m_BGTransform, m_BackgroundImage->GetSize(), m_ZIndex_BG));
-    m_LogoImage->Draw(Util::ConvertToUniformBufferData(m_LGTransform, m_LogoImage->GetSize(), m_ZIndex_LG));
 }
+
+void Menu::LevelSelect() {
+    auto matrices = Util::ConvertToUniformBufferData(PurpleBlockTransform,m_PurpleBlock->GetSize(),1.5f);
+    m_PurpleBlock->Draw(matrices);
+    matrices = Util::ConvertToUniformBufferData(SelectLevelTransform,m_SelectLevel->GetSize(),1.6f);
+    m_SelectLevel->Draw(matrices);
+    Click(m_One, OneTransform);
+    Click(m_Two, TwoTransform);
+    Click(m_Three, ThreeTransform);
+    Click(m_Back, BackTransform);
+
+}
+
 
 void Menu::LevelComplete() {
     // 2. 利用助教的工具轉換出標準矩陣
@@ -242,6 +287,18 @@ void Menu::Gameover() {
     if (Util::Input::IsKeyDown(Util::Keycode::SPACE)) {
         m_ClickWhichButton = 3;
     }
+}
+
+void Menu::Win() {
+    auto matrices = Util::ConvertToUniformBufferData(BlockTransform,m_Block->GetSize(),5.0f);
+
+    m_Block->Draw(matrices);
+
+    matrices = Util::ConvertToUniformBufferData(TrophycatTransform,m_TrophyCat->GetSize(),5.5f);
+    m_TrophyCat->Draw(matrices);
+
+    EndgameTransform.translation = {0.0f, -125.0f};
+    Click(m_Endgame,EndgameTransform);
 }
 
 

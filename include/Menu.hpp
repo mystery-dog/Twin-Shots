@@ -18,6 +18,8 @@ public:
     void Update() override;
     void Draw(float cameraX, float cameraY) override;
 
+    void BasicSet(std::shared_ptr<Util::Image>& m_Image, std::shared_ptr<Util::Image> Image, Util::Transform& transform, float tx, float ty, float sx, float sy);
+
     bool IsPressed() const { return m_StartPressed; }
     void SetPressed() { m_StartPressed = false; }
 
@@ -26,11 +28,15 @@ public:
 
     void Click(std::shared_ptr<Util::Image> Image, Util::Transform transform);
 
+    void LevelSelect();
+
     void LevelComplete();
 
     void Pause();
 
     void Gameover();
+
+    void Win();
 
     void SetScore(int score);
     void SetCurrentScore() { m_CurrentScore = 0; }
@@ -45,17 +51,24 @@ private:
 
     // 【新增】用來裝載全螢幕半透明遮罩的圖片
     std::shared_ptr<Util::Image> m_Block;       //半透明遮罩
+    std::shared_ptr<Util::Image> m_PurpleBlock;       //紫色遮罩（選關卡）
 
     std::shared_ptr<Util::Image> m_Continue;    //continue按鈕
     std::shared_ptr<Util::Image> m_Endgame;     //endgame按鈕
     std::shared_ptr<Util::Image> m_Resue;     //resue按鈕
-    std::shared_ptr<Util::Image> m_RestartLevel;     //resue按鈕
+    std::shared_ptr<Util::Image> m_RestartLevel;     //restartLevel按鈕
+    std::shared_ptr<Util::Image> m_Back;     //back按鈕
+    std::shared_ptr<Util::Image> m_One;     //1按鈕
+    std::shared_ptr<Util::Image> m_Two;     //2按鈕
+    std::shared_ptr<Util::Image> m_Three;     //3按鈕
 
     std::shared_ptr<Util::Image> m_LevelFinished;//字
     std::shared_ptr<Util::Image> m_Pause;//字
     std::shared_ptr<Util::Image> m_LevelFailed;//字
+    std::shared_ptr<Util::Image> m_SelectLevel;//字
 
     std::shared_ptr<Util::Image> m_ShotCat;     //射箭貓小圖
+    std::shared_ptr<Util::Image> m_TrophyCat;     //獎盃貓圖
 
     std::shared_ptr<Util::Text> m_PressSpaceText;     // 提示文字
     std::shared_ptr<Util::Text> m_ScoreText;          // 【新增】用來顯示分數
@@ -64,17 +77,24 @@ private:
     Util::Transform uiTransform;
 
     Util::Transform BlockTransform;
+    Util::Transform PurpleBlockTransform;
 
     Util::Transform ContinueTransform;
     Util::Transform EndgameTransform;
     Util::Transform ResueTransform;
     Util::Transform RestartLevelTransform;
+    Util::Transform BackTransform;
+    Util::Transform OneTransform;
+    Util::Transform TwoTransform;
+    Util::Transform ThreeTransform;
 
     Util::Transform LevelfinishedTransform;
     Util::Transform PauseTransform;
     Util::Transform LevelFailedTransform;
+    Util::Transform SelectLevelTransform;
 
     Util::Transform ShotcatTransform;
+    Util::Transform TrophycatTransform;
 
     bool m_StartPressed = false;
     Util::Transform m_BGTransform;
