@@ -29,6 +29,7 @@ void Map::InitTileImages() {
 
     // 背景圖片 (對應 ID 1)
     m_TileImages[1] = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/141.jpg"); // 改用 ID 當 Key 比較快
+    m_TileImages[8] = std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/score.png");
     for (int i = 0; i < 4; i++) {
         if (i<2) {
             auto path = std::string(RESOURCE_DIR) + "/Image/background/pause" + std::to_string(i) + ".png";
@@ -217,7 +218,7 @@ void Map::Draw(float cameraX, float cameraY) {
 
         //生命顯示
         Util::Transform m_Life;
-        m_Life.translation = {530.0f, -320.0f};
+        m_Life.translation = {530.0f, -275.0f};
         m_Life.scale = {13.5f, 8.0f};
 
         auto Life = Util::ConvertToUniformBufferData(m_Life, m_Life.scale, 1.0f);
@@ -226,6 +227,14 @@ void Map::Draw(float cameraX, float cameraY) {
         else if (m_Player->GetLife() == 2) m_TileImages[TileID::LIFE_2]->Draw(Life);
         else if (m_Player->GetLife() == 1) m_TileImages[TileID::LIFE_1]->Draw(Life);
         else m_TileImages[TileID::LIFE_0]->Draw(Life);
+
+        //分數顯示
+        Util::Transform m_Score;
+        m_Score.translation = {512.5f, -332.5f};
+        m_Score.scale = {15.0f, 7.0f};
+        auto Score = Util::ConvertToUniformBufferData(m_Score, m_Score.scale, 1.0f);
+
+        m_TileImages[TileID::SCORE]->Draw(Score);
 
         //暫停顯示
         m_Pause.translation = {600.0f, 335.0f};

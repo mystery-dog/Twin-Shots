@@ -86,6 +86,7 @@ void App::Update() {
         // 這樣就算時間暫停了，玩家還是看得到死掉的小惡魔和定格的怪物
         // ==========================================
         obj->Draw(m_Camera.GetX(), m_Camera.GetY());   // 執行該物件的畫面渲染 (會去調用助教的矩陣工具並把圖畫出來)
+        m_Menu->ShowScore(620.0f, -333.0f);
     }
     // ==========================================
     // 2. 【新增】過關判定：清點活著的怪物數量
@@ -159,6 +160,9 @@ void App::Update() {
 
     if (Util::Input::IsKeyDown(Util::Keycode::M)) {
         m_GameObjects.pop_back();
+        m_Menu->SetScore(100);//要寫在怪物判定那裡
+    }
+    if (Util::Input::IsKeyDown(Util::Keycode::N)) {
         m_Menu->SetScore(100);//要寫在怪物判定那裡
     }
 

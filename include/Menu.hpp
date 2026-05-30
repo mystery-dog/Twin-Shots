@@ -41,6 +41,9 @@ public:
     void SetScore(int score);
     void SetCurrentScore() { m_CurrentScore = 0; }
     void SetTotalScore() { m_TotalScore = 0; }
+    int GetCurrentScore() { return m_CurrentScore; }
+
+    void ShowScore(float x, float y);
 
 
 private:
@@ -73,6 +76,7 @@ private:
     std::shared_ptr<Util::Text> m_PressSpaceText;     // 提示文字
     std::shared_ptr<Util::Text> m_ScoreText;          // 【新增】用來顯示分數
     std::shared_ptr<Util::Text> m_TotalScoreText;          // 【新增】用來顯示分數
+    std::shared_ptr<Util::Text> m_CurrentScoreText;          // 【新增】用來顯示分數
 
     Util::Transform uiTransform;
 

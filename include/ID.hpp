@@ -19,6 +19,7 @@ namespace TileID {
         LIFE_3  =   5,      //對應life_3
         PAUSE_0 =   6,
         PAUSE_1 =   7,
+        SCORE = 8,
 
         //地板 開頭1
         GROUND_0 = 10,      // 對應 tile0

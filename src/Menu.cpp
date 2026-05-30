@@ -54,10 +54,11 @@ Menu::Menu() {
 
 
     std::string fontPath = RESOURCE_DIR"/fonts/Cubic_11.ttf";
-    auto purpleColor = Util::   Color::FromName(Util::Colors::PURPLE);
+    auto purpleColor = Util::Color::FromName(Util::Colors::PURPLE);
     m_PressSpaceText = std::make_shared<Util::Text>(fontPath, 30, "Press SPACE to continue", purpleColor);
     m_ScoreText = std::make_shared<Util::Text>(fontPath, 40, "Level score: " + std::to_string(m_CurrentScore), purpleColor);
     m_TotalScoreText = std::make_shared<Util::Text>(fontPath, 40, "Total score: " + std::to_string(m_TotalScore), purpleColor);
+    m_CurrentScoreText = std::make_shared<Util::Text>(fontPath, 30, std::to_string(m_CurrentScore), Util::Color::FromName(Util::Colors::PINK));
 }
 
 void Menu::BasicSet(std::shared_ptr<Util::Image>& m_Image, std::shared_ptr<Util::Image> Image, Util::Transform& transform, float tx, float ty, float sx, float sy) {
@@ -301,4 +302,19 @@ void Menu::Win() {
     Click(m_Endgame,EndgameTransform);
 }
 
+void Menu::ShowScore(float x, float y) {
+    // 在畫圖前，把最新的分數「組合」成字串，然後塞給文字物件！
+    m_CurrentScoreText->SetText(std::to_string(m_CurrentScore));
+    m_CurrentScoreText->SetColor(Util::Color::FromName(Util::Colors::PINK));
 
+    // 2. 取得這串文字現在「真實的寬度和高度」
+    glm::vec2 size = m_CurrentScoreText->GetSize();
+
+    // 3. 【核心魔法：靠右對齊】
+    // 我們讓傳進來的 x 當作「最右邊界」。
+    // 既然引擎看的是中心點，那我們就把中心點往左推 (減去寬度的一半)！
+    uiTransform.translation = { x - (size.x / 2.0f), y };
+    uiTransform.scale = {1.0f,1.0f};
+
+    m_CurrentScoreText->Draw(Util::ConvertToUniformBufferData(uiTransform, m_CurrentScoreText->GetSize(), 1.6f));
+}
