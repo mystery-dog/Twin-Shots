@@ -38,6 +38,8 @@ public:
 
     void Win();
 
+    void Help();
+
     void SetScore(int score);
     void SetCurrentScore() { m_CurrentScore = 0; }
     void SetTotalScore() { m_TotalScore = 0; }
@@ -48,14 +50,18 @@ public:
 
 private:
     std::shared_ptr<Util::Image> m_LogoImage;
-    std::shared_ptr<Util::Image> m_PlayImage;
     std::shared_ptr<Util::Image> m_BackgroundImage;
+
+    Util::Transform m_BGTransform;
+    Util::Transform m_LGTransform;
 
 
     // 【新增】用來裝載全螢幕半透明遮罩的圖片
     std::shared_ptr<Util::Image> m_Block;       //半透明遮罩
     std::shared_ptr<Util::Image> m_PurpleBlock;       //紫色遮罩（選關卡）
 
+    std::shared_ptr<Util::Image> m_PlayImage;   //Play按鈕
+    std::shared_ptr<Util::Image> m_HelpImage;   //Help按鈕
     std::shared_ptr<Util::Image> m_Continue;    //continue按鈕
     std::shared_ptr<Util::Image> m_Endgame;     //endgame按鈕
     std::shared_ptr<Util::Image> m_Resue;     //resue按鈕
@@ -72,17 +78,27 @@ private:
 
     std::shared_ptr<Util::Image> m_ShotCat;     //射箭貓小圖
     std::shared_ptr<Util::Image> m_TrophyCat;     //獎盃貓圖
+    std::shared_ptr<Util::Image> m_Left;        //左(Help裡的)
+    std::shared_ptr<Util::Image> m_Right;       //右(Help裡的)
+    std::shared_ptr<Util::Image> m_Up;          //上(Help裡的)
+    std::shared_ptr<Util::Image> m_Space;       //空白鍵(Help裡的)
 
     std::shared_ptr<Util::Text> m_PressSpaceText;     // 提示文字
     std::shared_ptr<Util::Text> m_ScoreText;          // 【新增】用來顯示分數
     std::shared_ptr<Util::Text> m_TotalScoreText;          // 【新增】用來顯示分數
     std::shared_ptr<Util::Text> m_CurrentScoreText;          // 【新增】用來顯示分數
+    // 【新增】專門給 Help 畫面用的文字
+    std::shared_ptr<Util::Text> m_HelpText1; //Up
+    std::shared_ptr<Util::Text> m_HelpText2; //Space
+    std::shared_ptr<Util::Text> m_HelpText3; //Left,Right
 
     Util::Transform uiTransform;
 
     Util::Transform BlockTransform;
     Util::Transform PurpleBlockTransform;
 
+    Util::Transform m_PlayTransform; // 專門給play按鈕用的位置
+    Util::Transform m_HelpTransform; // 專門給help按鈕用的位置
     Util::Transform ContinueTransform;
     Util::Transform EndgameTransform;
     Util::Transform ResueTransform;
@@ -99,16 +115,18 @@ private:
 
     Util::Transform ShotcatTransform;
     Util::Transform TrophycatTransform;
+    Util::Transform LeftTransform;
+    Util::Transform RightTransform;
+    Util::Transform UpTransform;
+    Util::Transform SpaceTransform;
 
     bool m_StartPressed = false;
-    Util::Transform m_BGTransform;
-    Util::Transform m_LGTransform;
+    bool m_HelpPressed = false;
 
     float m_ZIndex_BG = 0.0f;
     float m_ZIndex_LG = 0.5f;
     float m_ZIndex_Play = 0.5f;
 
-    Util::Transform m_PlayTransform; // 專門給按鈕用的位置
     bool m_IsHovering = false;       // 目前滑鼠是否在按鈕上
 
     //

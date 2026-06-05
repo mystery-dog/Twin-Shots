@@ -34,6 +34,8 @@ public:
 
     void Level();
 
+    void Cheating();
+
     void Start();
 
     void Update();

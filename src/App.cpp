@@ -21,18 +21,15 @@ void App::Start() {
     m_Menu->SetTotalScore();
     Stop = false;
 
-    if (m_Menu->GetClickWhichButton() != -1){
-        if (m_Menu->GetClickWhichButton() == 2) {
-            Start();
-        }else {
-            if (m_Menu->GetClickWhichButton() == 11) {
-                m_CurrentLevel = 1;
-            }else if (m_Menu->GetClickWhichButton() == 12) {
-                m_CurrentLevel = 2;
-            }else if (m_Menu->GetClickWhichButton() == 13) {
-                m_CurrentLevel = 3;
-            }
-        }
+    // 取得玩家按下的按鈕代號
+    int btn = m_Menu->GetClickWhichButton();
+
+    // 【核心修正】：只有在按下 1、2、3 關卡按鈕時 (代號 11, 12, 13)，才允許進入遊戲！
+    if (btn == 11 || btn == 12 || btn == 13) {
+
+        if (btn == 11) m_CurrentLevel = 1;
+        else if (btn == 12) m_CurrentLevel = 2;
+        else if (btn == 13) m_CurrentLevel = 3;
 
         if (!m_Map) {
             m_Map = std::make_shared<Map>();
@@ -46,9 +43,11 @@ void App::Start() {
         // 你可以自己微調這個數字，找回原版遊戲的手感。
         m_Camera.SetDeadzone(200.0f, 50.0f);
 
+        // 切換狀態前，把 Menu 的按鈕與點擊狀態「洗掉」！
         m_Menu->SetPressed();
+        m_Menu->SetClickWhichButton(); // 【新增】把按鈕狀態重置回 -1，避免帶入遊戲中
 
-        // 2. 切換狀態進入遊戲循環
+        // 正式切換狀態進入遊戲循環
         m_CurrentState = State::UPDATE;
     }
     // 原本引擎內建的偵測：當按下 ESC 鍵或點擊視窗關閉鈕時，準備結束遊戲
@@ -158,14 +157,8 @@ void App::Update() {
         m_CurrentState = State::END;
     }
 
-    if (Util::Input::IsKeyDown(Util::Keycode::M)) {
-        m_GameObjects.pop_back();
-        m_Menu->SetScore(100);//要寫在怪物判定那裡
-    }
-    if (Util::Input::IsKeyDown(Util::Keycode::N)) {
-        m_Menu->SetScore(100);//要寫在怪物判定那裡
-    }
 
+    Cheating();
 }
 
 void App::Level() {
@@ -250,6 +243,18 @@ void App::Level() {
     }
 }
 
+void App::Cheating() {
+    if (Util::Input::IsKeyDown(Util::Keycode::M)) {
+        m_GameObjects.pop_back();
+        m_Menu->SetScore(100);//要寫在怪物判定那裡
+    }
+    if (Util::Input::IsKeyDown(Util::Keycode::N)) {
+        m_Menu->SetScore(100);//要寫在怪物判定那裡
+    }
+}
+
+
 void App::End() { // NOLINT(this method will mutate members in the future)
     LOG_TRACE("End");
 }
+

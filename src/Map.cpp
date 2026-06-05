@@ -112,15 +112,7 @@ void Map::LoadFromFile(const std::string& filepath) {
 // 由於我們繼承了 GameObject 介面，介面規定一定要有 Update() 函式。
 // 目前地圖是靜態的(不會自己亂動)，所以這裡留空即可。
 void Map::Update() {
-    // 留空。未來如果你的地圖會有「隨時間崩塌的地板」之類的動態機制，才寫在這裡。
 
-
-
-
-    // 【新增】當按下 P 鍵時，同步切換地圖的除錯模式
-    if (Util::Input::IsKeyDown(Util::Keycode::P)) {
-        m_ShowDebug = !m_ShowDebug;
-    }
 }
 
 // 輸入世界座標，換算出那是第幾行第幾列，並回傳 txt 裡的數字

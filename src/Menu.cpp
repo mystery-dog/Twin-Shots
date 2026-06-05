@@ -15,6 +15,8 @@ Menu::Menu() {
         m_LGTransform,0.0f, 150.0f,1.5f,1.5f);
     BasicSet(m_PlayImage,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/play0.png"),
         m_PlayTransform,0.0f, -50.0f,1.0f,1.0f);
+    BasicSet(m_HelpImage,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/help1.png"),
+        m_HelpTransform,-5.0f, -125.0f,2.0f,1.8f);
     //遮罩
     BasicSet(m_Block,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/block.png"),
         BlockTransform,0.0f, 0.0f,1.0f, 1.0f);
@@ -46,12 +48,19 @@ Menu::Menu() {
       LevelFailedTransform,0.0f,150.0f,2.0f, 1.5f);
     BasicSet(m_SelectLevel,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/level/select_level.png"),
         SelectLevelTransform,0.0f,200.0f,2.5f,2.5f);
-
+    //其他
     BasicSet(m_ShotCat,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/shotcat.png"),
         ShotcatTransform,-150.0f, 50.0f,2.0f, 2.0f);
     BasicSet(m_TrophyCat,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/game_finished.png"),
         TrophycatTransform,0.0f,50.0f,2.0f,2.0f);
-
+    BasicSet(m_Left,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/left.png"),
+        LeftTransform,-250.0f,-25.0f,3.5f,3.5f);
+    BasicSet(m_Right,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/right.png"),
+        RightTransform,-50.0f,-25.0f,3.5f,3.5f);
+    BasicSet(m_Up,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/up.png"),
+        UpTransform,-150.0f,75.0f,3.5f,3.5f);
+    BasicSet(m_Space,std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/space.png"),
+        SpaceTransform,150.0f,25.0f,8.0f,3.5f);
 
     std::string fontPath = RESOURCE_DIR"/fonts/Cubic_11.ttf";
     auto purpleColor = Util::Color::FromName(Util::Colors::PURPLE);
@@ -59,6 +68,10 @@ Menu::Menu() {
     m_ScoreText = std::make_shared<Util::Text>(fontPath, 40, "Level score: " + std::to_string(m_CurrentScore), purpleColor);
     m_TotalScoreText = std::make_shared<Util::Text>(fontPath, 40, "Total score: " + std::to_string(m_TotalScore), purpleColor);
     m_CurrentScoreText = std::make_shared<Util::Text>(fontPath, 30, std::to_string(m_CurrentScore), Util::Color::FromName(Util::Colors::PINK));
+    // 【新增】設定 Help 畫面的文字內容 (字型、大小、文字、顏色)
+    m_HelpText1 = std::make_shared<Util::Text>(fontPath, 35, "跳躍", Util::Color::FromName(Util::Colors::WHITE));
+    m_HelpText2 = std::make_shared<Util::Text>(fontPath, 35, "射箭(攻擊)", Util::Color::FromName(Util::Colors::WHITE));
+    m_HelpText3 = std::make_shared<Util::Text>(fontPath, 35, "向左移動     向右移動", Util::Color::FromName(Util::Colors::WHITE));
 }
 
 void Menu::BasicSet(std::shared_ptr<Util::Image>& m_Image, std::shared_ptr<Util::Image> Image, Util::Transform& transform, float tx, float ty, float sx, float sy) {
@@ -77,8 +90,28 @@ void Menu::Update() {
         // 【狀態 A：還沒按 Play (主畫面)】
         // 畫出 Logo
         m_LogoImage->Draw(Util::ConvertToUniformBufferData(m_LGTransform, m_LogoImage->GetSize(), m_ZIndex_LG));
-        // 處理並畫出 Play 按鈕
-        Click(m_PlayImage, m_PlayTransform);
+        // ==========================================
+        // 【核心修正】：判斷現在是否開啟了 Help 面板
+        // ==========================================
+        if (m_HelpPressed) {
+            // 狀態 A-1：開啟 Help 說明時
+            // 直接「畫出」沒有 Hover 效果的原始圖片，不呼叫 Click()！
+            // 這樣按鈕看得到，但完全點不到！
+            auto playMatrices = Util::ConvertToUniformBufferData(m_PlayTransform, m_PlayImage->GetSize(), 0.5f);
+            m_PlayImage->Draw(playMatrices);
+
+            auto helpMatrices = Util::ConvertToUniformBufferData(m_HelpTransform, m_HelpImage->GetSize(), 0.5f);
+            m_HelpImage->Draw(helpMatrices);
+
+            // 畫完死板的背景按鈕後，才把 Help 面板疊加在最上層
+            Help();
+
+        } else {
+            // 狀態 A-2：正常主畫面
+            // 呼叫 Click 讓按鈕正常偵測滑鼠發光並接收點擊
+            Click(m_PlayImage, m_PlayTransform);
+            Click(m_HelpImage, m_HelpTransform);
+        }
     } else {
         // 【狀態 B：已經按下 Play (選關卡畫面)】
         // 直接在這裡呼叫選關卡函式，不再畫 Logo 跟 Play！
@@ -107,10 +140,20 @@ void Menu::Click(std::shared_ptr<Util::Image> Image, Util::Transform transform) 
         if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
             if (Image == m_PlayImage) {
                 m_StartPressed = true;
+            }else if (Image == m_HelpImage) {
+                m_HelpPressed = true;
             }else if (Image == m_Continue) {
                 m_ClickWhichButton = 0;
-            }else if (Image == m_Endgame || Image == m_Back) {
+            }else if (Image == m_Endgame) {
                 m_ClickWhichButton = 1;
+            }else if (Image == m_Back) {
+                if (m_HelpPressed) {
+                    // 如果現在是在 Help 畫面，按 Back 只要關閉 Help 就好！
+                    m_HelpPressed = false;
+                } else {
+                    // 如果是在選關卡畫面，按 Back 就把 Play 的狀態取消，退回主 Logo 畫面！
+                    m_StartPressed = false;
+                }
             }else if (Image == m_Resue) {
                 m_ClickWhichButton = 2;
             }else if (Image == m_RestartLevel) {
@@ -130,6 +173,10 @@ void Menu::Click(std::shared_ptr<Util::Image> Image, Util::Transform transform) 
     if (Image == m_PlayImage) {
         auto currentPlayImg = m_IsHovering ? std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/play1.png") : std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/play0.png");
         auto matrices = Util::ConvertToUniformBufferData(m_PlayTransform, currentPlayImg->GetSize(), 0.5f);
+        currentPlayImg->Draw(matrices);
+    }else if (Image == m_HelpImage) {
+        auto currentPlayImg = m_IsHovering ? std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/help2.png") : std::make_shared<Util::Image>(RESOURCE_DIR"/Image/menu/help1.png");
+        auto matrices = Util::ConvertToUniformBufferData(m_HelpTransform, currentPlayImg->GetSize(), 0.5f);
         currentPlayImg->Draw(matrices);
     }else if (Image == m_Continue) {
         auto currentPlayImg = m_IsHovering ? std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/continue1.png") : std::make_shared<Util::Image>(RESOURCE_DIR"/Image/background/continue0.png");
@@ -301,6 +348,40 @@ void Menu::Win() {
     EndgameTransform.translation = {0.0f, -125.0f};
     Click(m_Endgame,EndgameTransform);
 }
+
+void Menu::Help() {
+    auto matrices = Util::ConvertToUniformBufferData(PurpleBlockTransform,m_PurpleBlock->GetSize(),1.5f);
+    m_PurpleBlock->Draw(matrices);
+    matrices = Util::ConvertToUniformBufferData(LeftTransform,m_Left->GetSize(),1.6f);
+    m_Left->Draw(matrices);
+    matrices = Util::ConvertToUniformBufferData(RightTransform,m_Left->GetSize(),1.6f);
+    m_Right->Draw(matrices);
+    matrices = Util::ConvertToUniformBufferData(UpTransform,m_Left->GetSize(),1.6f);
+    m_Up->Draw(matrices);
+    matrices = Util::ConvertToUniformBufferData(SpaceTransform,m_Left->GetSize(),1.6f);
+    m_Space->Draw(matrices);
+
+    // 2. 【新增】畫出說明文字 (Z-Index = 1.6f，要比紫板高才不會被蓋住！)
+    uiTransform.scale = {1.0f, 1.0f}; // 養成好習慣，畫圖前先把比例歸零
+
+    if (m_HelpText1) {
+        uiTransform.translation = {-150.0f, 20.0f}; // 放在畫面偏上方
+        m_HelpText1->Draw(Util::ConvertToUniformBufferData(uiTransform, m_HelpText1->GetSize(), 1.6f));
+    }
+
+    if (m_HelpText2) {
+        uiTransform.translation = {150.0f, -30.0f}; // 放在第一行的下方
+        m_HelpText2->Draw(Util::ConvertToUniformBufferData(uiTransform, m_HelpText2->GetSize(), 1.6f));
+    }
+
+    if (m_HelpText3) {
+        uiTransform.translation = {-150.0f, -75.0f}; // 放在第一行的下方
+        m_HelpText3->Draw(Util::ConvertToUniformBufferData(uiTransform, m_HelpText3->GetSize(), 1.6f));
+    }
+
+    Click(m_Back, BackTransform);
+}
+
 
 void Menu::ShowScore(float x, float y) {
     // 在畫圖前，把最新的分數「組合」成字串，然後塞給文字物件！

@@ -51,9 +51,6 @@ private:
     std::unordered_map<int, std::shared_ptr<Util::Image>> m_TileImages;
     std::shared_ptr<Player> m_Player; // 記錄玩家是誰
 
-    // 【新增】地圖的除錯模式開關，預設為 false
-    bool m_ShowDebug = false;
-
     Util::Transform m_Pause;
     bool m_PausePressed = false;
     bool m_IsPauseHovering = false;
