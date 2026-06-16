@@ -87,6 +87,118 @@ void App::Update() {
         obj->Draw(m_Camera.GetX(), m_Camera.GetY());   // 執行該物件的畫面渲染 (會去調用助教的矩陣工具並把圖畫出來)
         m_Menu->ShowScore(620.0f, -333.0f);
     }
+
+
+
+
+
+    //<Ying>
+    // ==================== 【從舊版合併：自動清除不活躍的物件】 ====================
+    // 例如死掉的怪物或消失的箭矢，會透過這個機制徹底移出記憶體，避免記憶體洩漏
+    m_GameObjects.erase(
+        std::remove_if(m_GameObjects.begin(), m_GameObjects.end(),
+            [](const std::shared_ptr<GameObject>& obj) {
+                // 檢查是否是不活躍的角色（如播完死亡動畫的怪物）
+                auto character = std::dynamic_pointer_cast<Character>(obj);
+                if (character != nullptr && !character->IsActive()) return true;
+
+                // 檢查是否是已經死掉（出界或射中目標）的箭矢
+                auto arrow = std::dynamic_pointer_cast<Arrow>(obj);
+                if (arrow != nullptr && arrow->IsDead()) return true;
+
+                return false;
+            }),
+        m_GameObjects.end()
+    );
+    // ==================== 【核心新增：箭矢與怪物的碰撞偵測】 ===================
+    if (m_Player) {
+        // 透過剛寫的 Getter 拿到玩家身上所有的箭
+        for (auto& arrow : m_Player->GetArrows()) {
+
+            // 只有「還在飛」且「沒插在牆上」的箭才能傷怪
+            if (!arrow->IsDead() && !arrow->IsStuck()) {
+
+                for (auto& obj : m_GameObjects) {
+                    auto enemy = std::dynamic_pointer_cast<Emeny>(obj);
+
+                    // 找到場上還活著的怪物
+                    if (enemy != nullptr && !enemy->IsDead()) {
+
+                        // 1. 計算箭與怪物的中心點距離
+                        float deltaX = std::abs(arrow->GetX() - enemy->GetX());
+                        float deltaY = std::abs(arrow->GetY() - enemy->GetY());
+
+                        // 2. 取得兩者的碰撞範圍 (圖片大小的一半)
+                        float arrowHalfW = arrow->GetSize().x * 0.5f;
+                        float arrowHalfH = arrow->GetSize().y * 0.5f;
+                        float enemyHalfW = enemy->GetImageSize().x * 0.5f;
+                        float enemyHalfH = enemy->GetImageSize().y * 0.5f;
+
+                        // 3. AABB 矩形碰撞公式判定
+                        if (deltaX < (arrowHalfW + enemyHalfW) && deltaY < (arrowHalfH + enemyHalfH)) {
+
+                            // 【🎯 擊中成功！】
+                            enemy->SetLifeToZero(); // 讓怪物血量歸零（觸發牠在自己的 Update 播死亡動畫）
+                            enemy->Die();           // 標記已死（讓下面的過關清點數量立刻扣除）
+                            arrow->Die();           // 讓箭矢死掉
+
+                            m_Menu->SetScore(100);  // 射中得分！
+                            break; // 這支箭已經爆了，跳出怪物迴圈，換下一支箭
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ====== 【核心新增：玩家與怪物的受傷碰撞偵測】 ======
+    // 只有在遊戲沒結束、沒暫停，且玩家活著時才偵測
+    if (m_Player && m_Player->GetLife() > 0 && !isGameOver && !Stop) {
+
+        // 如果玩家目前已經是無敵狀態，我們就不用浪費效能去算碰撞了
+        if (!m_Player->IsInvincible()) {
+
+            // 取得玩家的碰撞範圍 (半寬與半高)
+            // 這裡假設 m_Player 也有 GetImageSize() 或類似拿到寬高的方法
+            // 如果是用 GetSize() 則依據你 Player 的設計修改
+            float playerX = m_Player->GetX();
+            float playerY = m_Player->GetY();
+            float playerHalfW = m_Player->GetSize().x * 0.5f;
+            float playerHalfH = m_Player->GetSize().y * 0.5f;
+
+            // 遍歷所有遊戲物件，尋找活著的怪物
+            for (auto& obj : m_GameObjects) {
+                auto enemy = std::dynamic_pointer_cast<Emeny>(obj);
+
+                // 找到場上還活著的怪物
+                if (enemy != nullptr && !enemy->IsDead()) {
+
+                    // 1. 計算玩家與怪物的中心點距離
+                    float deltaX = std::abs(playerX - enemy->GetX());
+                    float deltaY = std::abs(playerY - enemy->GetY());
+
+                    // 2. 取得怪物的碰撞範圍
+                    float enemyHalfW = enemy->GetImageSize().x * 0.5f;
+                    float enemyHalfH = enemy->GetImageSize().y * 0.5f;
+
+                    // 3. AABB 矩形碰撞公式判定
+                    if (deltaX < (playerHalfW + enemyHalfW) && deltaY < (playerHalfH + enemyHalfH)) {
+
+                        // 【💥 玩家撞到怪！】
+                        m_Player->Hurt(); // 呼叫玩家受傷功能（會自動扣血、變更受傷圖片、開啟無敵閃爍）
+
+                        break; // 已經撞到一隻怪並受傷了，立刻跳出迴圈，避免同一幀內被多隻怪重複判定
+                    }
+                }
+            }
+        }
+    }
+    // ===================================================
+    //</Ying>
+
+
+
+
     // ==========================================
     // 2. 【新增】過關判定：清點活著的怪物數量
     // ==========================================

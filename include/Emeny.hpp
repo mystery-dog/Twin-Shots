@@ -19,11 +19,17 @@ public:
 
     void DarkDevilMove();
 
-    // ==========================================
-    // 【新增】判斷生死狀態的公開函式
-    // ==========================================
+
+
+    //Ying
+    int GetLife() const { return m_life; }
+    void SetLifeToZero() { m_life = 0; } // 讓血量變 0
+    glm::vec2 GetImageSize() const { return m_Image ? m_Image->GetSize() : glm::vec2(0.0f); }
+    // 【新增】讓 App::Update 可以檢查這隻怪物死了沒
     bool IsDead() const { return m_IsDead; }
 
+    // 【新增】受傷或被除錯鍵按到時，呼叫這個函式讓怪物死掉
+    void Die() { m_IsDead = true; }
 private:
     // 【新增】用來儲存這隻怪物是什麼種類
     ENEMY_ID::Type m_Type;
@@ -59,6 +65,8 @@ private:
     int m_FrameIndex = 0;       // 目前播到第幾張圖
     int m_FrameTimer = 0;       // 計時器 (用來算經過了幾幀)
     int m_AnimationSpeed = 7.0f;  // 播放速度 (數字越大，動畫播得越慢。10 代表每 10 幀換一張圖)
+
+    bool m_IsDeadTriggered = false;
 };
 
 #endif

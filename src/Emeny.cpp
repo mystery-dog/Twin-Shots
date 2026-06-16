@@ -60,6 +60,54 @@ Emeny::Emeny(ENEMY_ID::Type type, float startX, float startY, std::shared_ptr<Ma
 }
 
 void Emeny::Update() {
+    //<Ying>
+    if (m_life <= 0) {
+        if (!m_IsDeadTriggered) {
+            m_FrameIndex = 0;
+            m_FrameTimer = 0;
+            m_IsDeadTriggered = true;
+        }
+        m_Speed = 0.0f;
+        m_VelocityX = 0.0f;
+        m_VelocityY = 0.0f;
+
+        // 播放死亡動畫
+        m_FrameTimer++;
+        if (m_FrameTimer >= m_AnimationSpeed) {
+            m_FrameTimer = 0;
+            m_FrameIndex++;
+        }
+
+        if (m_Type == ENEMY_ID::Slime) {
+            if (m_FrameIndex < m_SlimeDead.size()) {
+                m_Image = m_SlimeDead[m_FrameIndex];
+            } else {
+                // 動畫播完了！將 Character 的 m_IsActive 設為 false，讓 App 把它移出遊戲
+                m_IsActive = false;
+            }
+        }
+        else if (m_Type == ENEMY_ID::Flymonster) {
+            if (m_FrameIndex < m_FlymonsterDead.size()) {
+                m_Image = m_FlymonsterDead[m_FrameIndex];
+            } else {
+                m_IsActive = false;
+            }
+        }
+        else if (m_Type == ENEMY_ID::DarkDevil) {
+            if (m_FrameIndex < m_DarkDevilDead.size()) {
+                m_Image = m_DarkDevilDead[m_FrameIndex];
+            } else {
+                m_IsActive = false;
+            }
+        }
+
+        // 既然死掉了，後面的移動、碰撞、走路動畫就通通不用算了，直接 return 跳出！
+        return;
+    }
+    //</Ying>
+
+
+
     // ==========================================
     // 1. 大腦決策：決定這回合要往哪走
     // ==========================================

@@ -16,7 +16,7 @@
 #include "Menu.hpp"
 
 class Player;
-
+class Emeny;
 // 【繼承技巧】使用 : public GameObject 來繼承介面
 class Map : public GameObject {
 public:
@@ -43,6 +43,16 @@ public:
     ;// 【新增】提供一個方法讓外部強制洗掉暫停狀態
     void SetPausePressed() { m_PausePressed = false; }
 
+    //盈盈
+    // 【新增】提供給 App 塞怪物的函數
+    void AddEnemy(std::shared_ptr<Emeny> enemy) { m_Enemies.push_back(enemy); }
+
+    // 【新增】提供給 Player 拿怪物名單的函數
+    const std::vector<std::shared_ptr<Emeny>>& GetEnemies() const { return m_Enemies; }
+
+    // 【新增】切換關卡時清空怪物的函數
+    void ClearEnemies() { m_Enemies.clear(); }
+
 private:
     void InitTileImages();
 
@@ -54,6 +64,9 @@ private:
     Util::Transform m_Pause;
     bool m_PausePressed = false;
     bool m_IsPauseHovering = false;
+
+    //盈盈
+    std::vector<std::shared_ptr<Emeny>> m_Enemies; // 儲存這一關的所有怪物指標
 };
 
 #endif

@@ -31,6 +31,12 @@ public:
 
     void SetMapmax(float MapHeight, float MapWidth);
 
+    //怪物死掉
+    bool IsActive() const { return m_IsActive; }
+    void Damage(int amount) {
+        m_life -= amount;
+        if (m_life <= 0) m_IsActive = false; // 血量歸零，標記為死亡
+    }
 protected:
     // =======================================================
     // 【關鍵修改】：把 private 變成 protected！
@@ -39,6 +45,11 @@ protected:
     float m_X;
     float m_Y;
     float m_Speed = 7.0f; // 預設速度，小孩可以自己改
+
+    // ─── ADD THIS LINE HERE ────────────────────────────────
+    bool m_IsActive = true;
+    int m_life = 3;// 給角色預設血量（例如 3 滴血或 100 HP）
+    // ───────────────────────────────────────────────────────
 
     float m_VelocityX = 0.0f;
     float m_VelocityY = 0.0f;
@@ -62,6 +73,8 @@ protected:
     std::shared_ptr<Map> m_Map;
     std::shared_ptr<Util::Image> m_Image;
 
+    //<Ying?
+    bool m_ShowDebug = false;
 };
 
 #endif
