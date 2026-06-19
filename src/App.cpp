@@ -145,7 +145,7 @@ void App::Update() {
                             }
                             arrow->Die();           // 讓箭矢死掉
 
-                            m_Menu->SetScore(100);  // 射中得分！
+                            m_Menu->SetScore(enemy->GetScore());  // 射中得分！
                             break; // 這支箭已經爆了，跳出怪物迴圈，換下一支箭
                         }
                     }
@@ -166,8 +166,8 @@ void App::Update() {
             // 如果是用 GetSize() 則依據你 Player 的設計修改
             float playerX = m_Player->GetX();
             float playerY = m_Player->GetY();
-            float playerHalfW = m_Player->GetSize().x * 0.7f;
-            float playerHalfH = m_Player->GetSize().y * 0.7f;
+            float playerHalfW = m_Player->GetSize().x * 0.5f;
+            float playerHalfH = m_Player->GetSize().y * 0.5f;
 
             // 遍歷所有遊戲物件，尋找活著的怪物
             for (auto& obj : m_GameObjects) {
@@ -181,8 +181,8 @@ void App::Update() {
                     float deltaY = std::abs(playerY - enemy->GetY());
 
                     // 2. 取得怪物的碰撞範圍
-                    float enemyHalfW = enemy->GetImageSize().x * 0.5f;
-                    float enemyHalfH = enemy->GetImageSize().y * 0.5f;
+                    float enemyHalfW = enemy->GetImageSize().x * 0.7f;
+                    float enemyHalfH = enemy->GetImageSize().y * 0.7f;
 
                     // 3. AABB 矩形碰撞公式判定
                     if (deltaX < (playerHalfW + enemyHalfW) && deltaY < (playerHalfH + enemyHalfH)) {

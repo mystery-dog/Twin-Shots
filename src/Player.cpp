@@ -430,7 +430,7 @@ void Player::Hurt() {
     m_FlashTimer = 0.0f;
 
     // 【可選】如果你希望受傷時角色被彈開（Knockback效果），可以在這裡給予一個反向的速度
-    m_VelocityY = m_JumpForce * 0.6f; // 往上小跳一下
+    m_VelocityY = m_JumpForce * 0.7f; // 往上小跳一下
     m_VelocityX = m_FacingRight ? -m_Speed*2.0: m_Speed*2.0 ;// 往後彈
 }
 //</Ying>===============================================
