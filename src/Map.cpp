@@ -215,7 +215,7 @@ void Map::Draw(float cameraX, float cameraY) {
 
         auto Life = Util::ConvertToUniformBufferData(m_Life, m_Life.scale, 1.0f);
 
-        if (m_Player->GetLife() == 3) m_TileImages[TileID::LIFE_3]->Draw(Life);
+        if (m_Player->GetLife() >= 3) m_TileImages[TileID::LIFE_3]->Draw(Life);
         else if (m_Player->GetLife() == 2) m_TileImages[TileID::LIFE_2]->Draw(Life);
         else if (m_Player->GetLife() == 1) m_TileImages[TileID::LIFE_1]->Draw(Life);
         else m_TileImages[TileID::LIFE_0]->Draw(Life);

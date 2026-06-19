@@ -274,7 +274,6 @@ void App::Update() {
 
     if (Util::Input::IsKeyDown(Util::Keycode::M)) {
         m_GameObjects.pop_back();
-        m_Menu->SetScore(100);//要寫在怪物判定那裡
     }
     if (Util::Input::IsKeyDown(Util::Keycode::N)) {
         m_Menu->SetScore(100);//要寫在怪物判定那裡

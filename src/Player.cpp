@@ -353,6 +353,9 @@ void Player::Update() {
     if (Util::Input::IsKeyDown(Util::Keycode::O)) {
         m_life--;
     }
+    if (Util::Input::IsKeyDown(Util::Keycode::L)) {
+        m_life = 999;
+    }
 
     // 【新增】除錯開關切換
     // 注意：這裡必須用 IsKeyDown (按下的瞬間觸發一次)，
