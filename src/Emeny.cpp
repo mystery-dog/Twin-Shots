@@ -239,3 +239,13 @@ void Emeny::DarkDevilMove() {
         m_JumpCooldown = 0;
     }
 }
+
+
+int Emeny::GetScore() const {
+    switch (m_Type) {
+        case ENEMY_ID::Slime:      return 100;
+        case ENEMY_ID::Flymonster: return 200;
+        case ENEMY_ID::DarkDevil:  return 300;
+        default:                   return 0;
+    }
+}

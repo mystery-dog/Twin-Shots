@@ -11,6 +11,7 @@
 Player::Player(float startX, float startY, std::shared_ptr<Map> map)
     : Character(startX, startY, map) {
     // 【新增】設定自己的身分是玩家！
+    m_Speed = 9.0f;
     m_IsPlayer = true;
     m_JumpForce = 13.5f;
     for (int i = 0; i < 8; i++) {
@@ -427,6 +428,6 @@ void Player::Hurt() {
 
     // 【可選】如果你希望受傷時角色被彈開（Knockback效果），可以在這裡給予一個反向的速度
     m_VelocityY = m_JumpForce * 0.6f; // 往上小跳一下
-    m_VelocityX = m_FacingRight ? -m_Speed : m_Speed; // 往後彈
+    m_VelocityX = m_FacingRight ? -m_Speed*2.0: m_Speed*2.0 ;// 往後彈
 }
 //</Ying>===============================================

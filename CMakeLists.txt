@@ -54,6 +54,8 @@ add_executable(${PROJECT_NAME}
         include/Emeny_ID.hpp
         src/Menu.cpp
         include/Menu.hpp
+        include/ArrowCollision.hpp
+        src/ArrowCollision.cpp
 )
 
 if(MSVC)

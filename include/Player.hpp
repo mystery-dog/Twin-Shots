@@ -70,7 +70,7 @@ private:
     int m_CurrentFrame = 0;         // 目前播到第幾張
     bool m_IsMoving = false;
     // 新增跳躍動畫的速度控制
-    float m_WalkFrameDuration = 0.07f;  // 【新增】走路動畫速度（數值小 = 腳步快）
+    float m_WalkFrameDuration = 0.05f;  // 【新增】走路動畫速度（數值小 = 腳步快）
     float m_StandFrameDuration = 0.08f; // 【新增】站立待機速度（數值大 = 呼吸慢）
     float m_JumpFrameDuration = 0.20f;
     // 為了精準捕捉「狀態切換」重置動畫，我們記錄一下原本在不在地面
@@ -84,7 +84,7 @@ private:
     std::vector<std::shared_ptr<Util::Image>> m_ShootRightImages;
     bool m_IsShooting = false;         // 目前是否正在射擊狀態
     bool m_HasSpawnedArrow = false;    // 確保這一次射擊動畫中，只會生出一支箭
-    float m_ShootFrameDuration = 0.06f;
+    float m_ShootFrameDuration = 0.03f;
     // 射擊動畫每格的切換速度（可依手感調整
     bool m_IsInvincible = false;       // 是否處於無敵狀態
     float m_InvincibleTimer = 0.0f;    // 無敵時間計時器
@@ -97,6 +97,7 @@ private:
     // ====== 🎯【新增：動態路徑與物理變數】 ======
     float m_Acceleration = 0.7f;   // 每幀增加的速度（數值越大越快衝到最高速）
     float m_Friction = 0.82f;
+
     //</Ying>=====================================
 
 

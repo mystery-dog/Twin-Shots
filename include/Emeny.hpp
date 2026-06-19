@@ -30,6 +30,9 @@ public:
 
     // 【新增】受傷或被除錯鍵按到時，呼叫這個函式讓怪物死掉
     void Die() { m_IsDead = true; }
+    //<Ying>
+    int GetScore() const;
+    bool Active() const{return m_IsActive;}
 private:
     // 【新增】用來儲存這隻怪物是什麼種類
     ENEMY_ID::Type m_Type;

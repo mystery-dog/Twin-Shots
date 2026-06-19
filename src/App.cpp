@@ -21,15 +21,18 @@ void App::Start() {
     m_Menu->SetTotalScore();
     Stop = false;
 
-    // 取得玩家按下的按鈕代號
-    int btn = m_Menu->GetClickWhichButton();
-
-    // 【核心修正】：只有在按下 1、2、3 關卡按鈕時 (代號 11, 12, 13)，才允許進入遊戲！
-    if (btn == 11 || btn == 12 || btn == 13) {
-
-        if (btn == 11) m_CurrentLevel = 1;
-        else if (btn == 12) m_CurrentLevel = 2;
-        else if (btn == 13) m_CurrentLevel = 3;
+    if (m_Menu->GetClickWhichButton() != -1){
+        if (m_Menu->GetClickWhichButton() == 2) {
+            Start();
+        }else {
+            if (m_Menu->GetClickWhichButton() == 11) {
+                m_CurrentLevel = 1;
+            }else if (m_Menu->GetClickWhichButton() == 12) {
+                m_CurrentLevel = 2;
+            }else if (m_Menu->GetClickWhichButton() == 13) {
+                m_CurrentLevel = 3;
+            }
+        }
 
         if (!m_Map) {
             m_Map = std::make_shared<Map>();
@@ -43,11 +46,9 @@ void App::Start() {
         // 你可以自己微調這個數字，找回原版遊戲的手感。
         m_Camera.SetDeadzone(200.0f, 50.0f);
 
-        // 切換狀態前，把 Menu 的按鈕與點擊狀態「洗掉」！
         m_Menu->SetPressed();
-        m_Menu->SetClickWhichButton(); // 【新增】把按鈕狀態重置回 -1，避免帶入遊戲中
 
-        // 正式切換狀態進入遊戲循環
+        // 2. 切換狀態進入遊戲循環
         m_CurrentState = State::UPDATE;
     }
     // 原本引擎內建的偵測：當按下 ESC 鍵或點擊視窗關閉鈕時，準備結束遊戲
@@ -138,8 +139,10 @@ void App::Update() {
                         if (deltaX < (arrowHalfW + enemyHalfW) && deltaY < (arrowHalfH + enemyHalfH)) {
 
                             // 【🎯 擊中成功！】
-                            enemy->SetLifeToZero(); // 讓怪物血量歸零（觸發牠在自己的 Update 播死亡動畫）
-                            enemy->Die();           // 標記已死（讓下面的過關清點數量立刻扣除）
+                            enemy->SetLifeToZero();// 讓怪物血量歸零（觸發牠在自己的 Update 播死亡動畫）
+                            if (!enemy->Active()) {
+                                enemy->Die();           // 標記已死（讓下面的過關清點數量立刻扣除）
+                            }
                             arrow->Die();           // 讓箭矢死掉
 
                             m_Menu->SetScore(100);  // 射中得分！
@@ -163,8 +166,8 @@ void App::Update() {
             // 如果是用 GetSize() 則依據你 Player 的設計修改
             float playerX = m_Player->GetX();
             float playerY = m_Player->GetY();
-            float playerHalfW = m_Player->GetSize().x * 0.5f;
-            float playerHalfH = m_Player->GetSize().y * 0.5f;
+            float playerHalfW = m_Player->GetSize().x * 0.7f;
+            float playerHalfH = m_Player->GetSize().y * 0.7f;
 
             // 遍歷所有遊戲物件，尋找活著的怪物
             for (auto& obj : m_GameObjects) {
@@ -269,8 +272,14 @@ void App::Update() {
         m_CurrentState = State::END;
     }
 
+    if (Util::Input::IsKeyDown(Util::Keycode::M)) {
+        m_GameObjects.pop_back();
+        m_Menu->SetScore(100);//要寫在怪物判定那裡
+    }
+    if (Util::Input::IsKeyDown(Util::Keycode::N)) {
+        m_Menu->SetScore(100);//要寫在怪物判定那裡
+    }
 
-    Cheating();
 }
 
 void App::Level() {
@@ -355,18 +364,6 @@ void App::Level() {
     }
 }
 
-void App::Cheating() {
-    if (Util::Input::IsKeyDown(Util::Keycode::M)) {
-        m_GameObjects.pop_back();
-        m_Menu->SetScore(100);//要寫在怪物判定那裡
-    }
-    if (Util::Input::IsKeyDown(Util::Keycode::N)) {
-        m_Menu->SetScore(100);//要寫在怪物判定那裡
-    }
-}
-
-
 void App::End() { // NOLINT(this method will mutate members in the future)
     LOG_TRACE("End");
 }
-
