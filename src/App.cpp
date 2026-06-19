@@ -245,7 +245,7 @@ void App::Update() {
         m_Menu->SetClickWhichButton();//重置按鈕狀態
         m_Menu->SetPressed();//重置play按鈕狀態
         m_CurrentState = State::START;
-        Start();
+        
     }else if (m_Menu->GetClickWhichButton() == 2) {
         Stop = false;
         m_Map->SetPausePressed();

@@ -21,7 +21,10 @@ public:
     void BasicSet(std::shared_ptr<Util::Image>& m_Image, std::shared_ptr<Util::Image> Image, Util::Transform& transform, float tx, float ty, float sx, float sy);
 
     bool IsPressed() const { return m_StartPressed; }
-    void SetPressed() { m_StartPressed = false; }
+    void SetPressed() {
+        m_StartPressed = false;
+        m_HelpPressed = false;
+    }
 
     int GetClickWhichButton() { return m_ClickWhichButton; }
     void SetClickWhichButton() { m_ClickWhichButton = -1; }

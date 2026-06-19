@@ -63,7 +63,7 @@ void Arrow::Update() {
 
         // 滑行時的碰撞偵測
         if (m_Map) {
-             float checkX = m_X;
+            float checkX = m_X;
             float checkY = m_Y - halfH - 2.0f; // 往下探測一點
             float arrowHalfWidth = (m_Image->GetSize().x * 0.5f) * 0.5f;
             float arrowHalfHeight = m_Image->GetSize().y * 0.5f;
@@ -142,10 +142,9 @@ void Arrow::Update() {
 
                     float TILE_SIZE = 64.0f;
                     float tileRow = std::floor(bottomY / TILE_SIZE);
-                    float tileTopY = (tileRow + 1.0f) * TILE_SIZE;
 
                     // 精準貼齊地面
-                    m_Y = tileTopY + arrowHalfHeight;
+                    m_Y = tileRow * TILE_SIZE;
 
                     // 🎯【核心改進 4】: 根據速度決定初始旋轉，讓轉場更自然
                     // 如果水平速度還夠，保留一點角度讓它看起來像在"滑入"
